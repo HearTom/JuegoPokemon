@@ -1,0 +1,67 @@
+<RelativeLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/fondo">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/menu_titulo"
+        android:id="@+id/textView"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:textSize="30dp"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp" />
+
+    <Button
+        android:layout_width="237dp"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_jugar"
+        android:id="@+id/btnjugar"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp" />
+
+    <Button
+        android:layout_width="237dp"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_acerca"
+        android:id="@+id/btnacerca"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/btnlista"
+        android:layout_alignLeft="@+id/btnlista"
+        android:layout_alignStart="@+id/btnlista"
+        android:layout_marginBottom="5dp" />
+
+    <Button
+        android:layout_width="237dp"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_otro"
+        android:id="@+id/btnlista"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/btnjugar"
+        android:layout_alignLeft="@+id/btnjugar"
+        android:layout_alignStart="@+id/btnjugar"
+        android:layout_marginBottom="5dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/menu_Salir"
+        android:id="@+id/btnsalir"
+        android:layout_below="@+id/btnacerca"
+        android:layout_alignLeft="@+id/btnacerca"
+        android:layout_alignStart="@+id/btnacerca"
+        android:layout_alignRight="@+id/btnacerca"
+        android:layout_alignEnd="@+id/btnacerca" />
+
+</RelativeLayout>
