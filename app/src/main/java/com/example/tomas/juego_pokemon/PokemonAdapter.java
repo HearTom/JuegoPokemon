@@ -16,9 +16,9 @@ import java.util.ArrayList;
  */
 public class PokemonAdapter extends BaseAdapter {
     protected Activity activity;
-    protected ArrayList<Pokemons> items;
+    protected ArrayList<Pokemon> items;
 
-    public PokemonAdapter(Activity activity, ArrayList<Pokemons> items) {
+    public PokemonAdapter(Activity activity, ArrayList<Pokemon> items) {
         this.activity = activity;
         this.items = items;
     }
@@ -47,13 +47,13 @@ public class PokemonAdapter extends BaseAdapter {
             vi = inflater.inflate(R.layout.listview_layout, null);
         }
 
-        Pokemons item = items.get(position);
+        Pokemon item = items.get(position);
 
         ImageView image = (ImageView) vi.findViewById(R.id.imgpokemon);
-        int resId = activity.getResources().getIdentifier(item.getImagen(), "drawable", activity.getPackageName());
+        int resId = activity.getResources().getIdentifier(item.getNombre(), "drawable", activity.getPackageName());
         image.setImageResource(resId);
         TextView nombre = (TextView) vi.findViewById(R.id.lblpokemon);
-        nombre.setText(item.getNombre_pokemon());
+        nombre.setText(item.getNombre().equals("pokeball") ? "??????" : item.getNombre());
         return vi;
     }
 }

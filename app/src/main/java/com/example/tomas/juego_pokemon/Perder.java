@@ -10,6 +10,7 @@ import android.view.WindowManager;
  */
 public class Perder extends AppCompatActivity {
 
+    private final int TIEMPO_ESPERA = 4000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +21,7 @@ public class Perder extends AppCompatActivity {
 
     public void Cuenta_Regresiva()
     {
-        new CountDownTimer(3000,1000)
+        new CountDownTimer(TIEMPO_ESPERA,1000)
         {
 
             @Override

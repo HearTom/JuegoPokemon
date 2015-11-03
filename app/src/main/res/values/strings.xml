@@ -2,14 +2,16 @@
 <resources>
 
     <string name="app_name">Adivina el Pokemon</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="menu_titulo">Adivina el Pokemon</string>
     <string name="menu_jugar">Jugar</string>
     <string name="menu_acerca">Acerca</string>
     <string name="menu_Salir">Salir</string>
     <string name="menu_otro">Lista de Pokemon</string>
-    <string name="Button_Aceptar">Aceptar</string>
-    <string name="Pregunta">¿Quién es ese Pokemon?</string>
+    <string name="boton_text_aceptar">Aceptar</string>
+    <string name="pregunta">¿Quién es ese Pokemon?</string>
     <string name="loser_text">Intentalo de nuevo</string>
+    <string name="total_puntos">Intentos : </string>
+    <string name="msg_ganaste">Adivinaste todos los Pokemons</string>
+    <string name="msg_perdiste"> Te has quedado sin intentos. Intentalo de Nuevo </string>
 </resources>

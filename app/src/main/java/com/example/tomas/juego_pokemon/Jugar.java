@@ -1,8 +1,7 @@
 package com.example.tomas.juego_pokemon;
 
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,89 +9,137 @@ import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Created by Tomas on 30/07/2014.
  */
-public class Jugar extends AppCompatActivity {
-    public static String[] nombre_pokemon={"bulbasaur","ivysaur","venasaur","charmander","charmeleon","charizard",
-            "squirtle","wartortle","blastoise","caterpie","metapod","butterfree",
-            "weedle","kakuna","beedrill","pidgey","pidgeotto","pidgeot","rattata",
-            "raticate","spearow","fearow","ekans","arbok","pikachu","raichu","sandshrew",
-            "sandslash","nidoran","nidorina","nidoqueen","cloyster","gloom","golem",
-            "krabby","magmar","marowak","snorlax","starmie","vulpix"};
-
-    public static String[] sombra_pokemon={"s_bulbasaur","s_ivysaur","s_venasaur","s_charmander","s_charmeleon","s_charizard",
-            "s_squirtle","s_wartortle","s_blastoise","s_caterpie","s_metapod","s_butterfree",
-            "s_weedle","s_kakuna","s_beedrill","s_pidgey","s_pidgeotto","s_pidgeot","s_rattata",
-            "s_raticate","s_spearow","s_fearow","s_ekans","s_arbok","s_pikachu","s_raichu","s_sandshrew",
-            "s_sandslash","s_nidoran","s_nidorina","s_nidoqueen","s_cloyster","s_gloom","s_golem",
-            "s_krabby","s_magmar","s_marowak","s_snorlax","s_starmie","s_vulpix"};
-
-    public static boolean[] estado={false,false,false,false,false,false,
-            false,false,false,false,false,false,
-            false,false,false,false,false,false,false,
-            false,false,false,false,false,false,false,false,
-            false,false,false,false,false,false,false,
-            false,false,false,false,false,false};
-
-    public static int pokemons_adivinados=0;
-    public static int intentos=3;
-    public static int numero_generado=0;
-    private Button aceptar;
-    private TextView mensaje_intentos,mensaje_cuenta;
-    private EditText usuario_pokemon;
-    private ImageView miimagen;
+public class Jugar extends AppCompatActivity implements View.OnClickListener {
+    ImageView imagen;
+    TextView lblintentos;
+    TextView lblcuenta;
     private MediaPlayer reproductor;
-    @Override
+    private final int TIEMPO_ESPERA = 5000;
+    private Button btn1, btn2, btn3, btn4;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_jugar);
-        aceptar=(Button) findViewById(R.id.btnaceptar);
-        mensaje_intentos=(TextView)findViewById(R.id.lblintentos);
-        mensaje_cuenta=(TextView)findViewById(R.id.lblcuenta);
-        usuario_pokemon=(EditText) findViewById(R.id.txtpokemon);
-        miimagen=(ImageView)findViewById(R.id.imgpokemon);
-        CargarPreferencias();
-        new MiTarea().execute();
-        reproductor= MediaPlayer.create(this,R.raw.atrapalosya);
+        iniciarComponentes();
+        PokemonDB.cargarDatos(getApplicationContext());
+        reproductor = MediaPlayer.create(this, R.raw.atrapalosya);
         reproductor.setLooping(true);
         reproductor.start();
-        mensaje_intentos.setText("Tiene " + intentos + " intentos");
-        aceptar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              String nombre=usuario_pokemon.getText().toString().toLowerCase();
-                if(nombre.equals(nombre_pokemon[numero_generado]))
-                {
-                      establecer_pokemon(numero_generado);
-                      estado[numero_generado]=true;
-                      pokemons_adivinados++;
-                      esperar();
-                }
-                else
-                {
-                    Toast.makeText(getApplicationContext(),"No es el pokemon",Toast.LENGTH_SHORT).show();
-                    intentos=intentos-1;
-                    mensaje_intentos.setText("Tiene " + intentos + " intentos");
-                }
+        new MiTarea().execute();
+        PokemonDB.cargarConfiguracion(getApplicationContext());
+        lblintentos.setText(String.valueOf(PokemonDB.INTENTOS));
+    }
 
-                if (intentos==0)
-                {
-                    removerPreferencias();
-                    Intent i = new Intent(Jugar.this,Perder.class);
-                    startActivity(i);
+
+    public void setSombra(int id) {
+        int resId = getResources().getIdentifier(PokemonDB.getSombra(id), "drawable", getPackageName());
+        imagen.setImageResource(resId);
+    }
+
+    public void setPokemon(int id) {
+        int resId = getResources().getIdentifier(PokemonDB.getNombre(id), "drawable", getPackageName());
+        imagen.setImageResource(resId);
+    }
+
+    private void iniciarComponentes() {
+        imagen = (ImageView) findViewById(R.id.miimagen);
+        lblintentos = (TextView) findViewById(R.id.lblintentos);
+        lblcuenta = (TextView) findViewById(R.id.lblcuenta);
+        btn1 = (Button) findViewById(R.id.btn1);
+        btn2 = (Button) findViewById(R.id.btn2);
+        btn3 = (Button) findViewById(R.id.btn3);
+        btn4 = (Button) findViewById(R.id.btn4);
+        btn1.setOnClickListener(this);
+        btn2.setOnClickListener(this);
+        btn3.setOnClickListener(this);
+        btn4.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Button boton = (Button) v;
+        String nombrePokemon = boton.getText().toString().toLowerCase();
+        if (PokemonDB.isPokemon(nombrePokemon)) {
+            setPokemon(PokemonDB.NUMEROGENERADO);
+            PokemonDB.setAdivinado(PokemonDB.NUMEROGENERADO, true);
+            PokemonDB.ADIVINADOS++;
+            habilitarBotones(false);
+            boton.setVisibility(View.VISIBLE);
+            boton.setClickable(false);
+            esperar();
+        } else {
+            PokemonDB.DisminuirIntentos();
+            lblintentos.setText(String.valueOf(PokemonDB.INTENTOS));
+            v.setVisibility(View.INVISIBLE);
+        }
+
+        if (PokemonDB.isGameOver()) {
+            Intent i = new Intent(Jugar.this, Perder.class);
+            startActivity(i);
+            finish();
+        }
+    }
+
+    public void esperar() {
+        new CountDownTimer(TIEMPO_ESPERA, 1000) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                lblcuenta.setText("Generando en " + (millisUntilFinished / 1000));
+            }
+
+            @Override
+            public void onFinish() {
+                lblcuenta.setText("");
+                if (!PokemonDB.isWin()) {
+                    new MiTarea().execute();
+                } else {
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.msg_ganaste), Toast.LENGTH_SHORT).show();
                     finish();
                 }
             }
-        });
+        }.start();
+    }
+
+    public void habilitarBotones(boolean valor) {
+        if (valor) {
+            btn1.setVisibility(View.VISIBLE);
+            btn2.setVisibility(View.VISIBLE);
+            btn3.setVisibility(View.VISIBLE);
+            btn4.setVisibility(View.VISIBLE);
+            btn1.setClickable(true);
+            btn2.setClickable(true);
+            btn3.setClickable(true);
+            btn4.setClickable(true);
+        } else {
+            btn1.setVisibility(View.INVISIBLE);
+            btn2.setVisibility(View.INVISIBLE);
+            btn3.setVisibility(View.INVISIBLE);
+            btn4.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (PokemonDB.isGameOver()) {
+            PokemonDB.removerDatos(getApplicationContext());
+        } else {
+            PokemonDB.guardarDatos(getApplicationContext());
+        }
+        reproductor.pause();
     }
 
     @Override
@@ -101,94 +148,9 @@ public class Jugar extends AppCompatActivity {
         reproductor.start();
     }
 
-    public void esperar()
-    {
-        new CountDownTimer(5000,1000)
-        {
-
-            @Override
-            public void onTick(long millisUntilFinished) {
-               mensaje_cuenta.setText("Generando en " + (millisUntilFinished/1000));
-            }
-
-            @Override
-            public void onFinish() {
-
-                if (pokemons_adivinados==nombre_pokemon.length)
-                {
-                    finish();
-                }
-                else
-                {
-                    new MiTarea().execute();
-                    mensaje_cuenta.setText("");
-                    usuario_pokemon.setText("");
-                }
-            }
-       }.start();
-    }
-
-    public void CargarPreferencias()
-    {
-        SharedPreferences mispreferencias = getSharedPreferences("PreferenciaPokemon", Context.MODE_PRIVATE);
-        intentos=mispreferencias.getInt("intentos",3);
-        pokemons_adivinados=mispreferencias.getInt("adivinados",0);
-        for (int i=0;i<nombre_pokemon.length;i++)
-        {
-           estado[i]=mispreferencias.getBoolean(nombre_pokemon[i],false);
-        }
-    }
-
-    public void GuardarPreferencias()
-    {
-        SharedPreferences mispreferencias = getSharedPreferences("PreferenciaPokemon", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = mispreferencias.edit();
-        editor.putInt("intentos",intentos);
-        editor.putInt("adivinados",pokemons_adivinados);
-        for (int i=0;i<nombre_pokemon.length;i++)
-        {
-            editor.putBoolean(nombre_pokemon[i], estado[i]);
-        }
-        editor.commit();
-    }
-
-    private void establecer_pokemon(int numero)
-    {
-        int resId = getResources().getIdentifier(nombre_pokemon[numero], "drawable", getPackageName());
-        miimagen.setImageResource(resId);
-    }
-
-    private void establecer_sombra(int numero)
-    {
-        int resId = getResources().getIdentifier(sombra_pokemon[numero], "drawable", getPackageName());
-        miimagen.setImageResource(resId);
-    }
-
-
-    private void removerPreferencias()
-    {
-        SharedPreferences settings = getSharedPreferences("PreferenciaPokemon", Context.MODE_PRIVATE);
-        settings.edit().clear().commit();
-    }
-    
-    @Override
-    protected void onStop() {
-        if (intentos==0)
-        {
-            removerPreferencias();
-        }
-        else
-        {
-            GuardarPreferencias();
-        }
-        reproductor.pause();
-        super.onStop();
-    }
-
     @Override
     protected void onDestroy() {
-        if (reproductor.isPlaying())
-        {
+        if (reproductor.isPlaying()) {
             reproductor.stop();
             reproductor.release();
         }
@@ -196,18 +158,58 @@ public class Jugar extends AppCompatActivity {
     }
 
     private class MiTarea extends AsyncTask<Void, Void, Void> {
-         private int valor_generado;
+        private ProgressDialog dialog;
+        private int numero = 0;
+        private int totalgenerados = 4;
+        private int numerosrestantes = totalgenerados - 1;
+        private int contador = 0;
+        private int permitidos = 0;
+        private int valorgenerado = -1;
+        ArrayList<Integer> numeros = new ArrayList<>();
+
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(Jugar.this);
+            dialog.setMessage("Generando ...");
+            dialog.show();
+        }
+
         @Override
         protected Void doInBackground(Void... params) {
             do {
-                valor_generado=((int)(Math.random()*nombre_pokemon.length));
-            }while(estado[valor_generado]);
+                numero = ((int) (Math.random() * PokemonDB.getTamaño()));
+                if (!PokemonDB.isAdivinado(numero) && valorgenerado <= 0) {
+                    valorgenerado = numero;
+                    contador++;
+                    numeros.add(numero);
+                } else if (!numeros.contains(numero) && permitidos < numerosrestantes) {
+                    numeros.add(numero);
+                    contador++;
+                    permitidos++;
+                }
+            } while (contador < totalgenerados);
+            Collections.shuffle(numeros);
+
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             return null;
         }
+
         @Override
         protected void onPostExecute(Void aVoid) {
-            numero_generado=valor_generado;
-            establecer_sombra(valor_generado);
+            PokemonDB.NUMEROGENERADO = valorgenerado;
+            setSombra(valorgenerado);
+            habilitarBotones(true);
+            btn1.setText(PokemonDB.getNombre(numeros.get(0)));
+            btn2.setText(PokemonDB.getNombre(numeros.get(1)));
+            btn3.setText(PokemonDB.getNombre(numeros.get(2)));
+            btn4.setText(PokemonDB.getNombre(numeros.get(3)));
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
             super.onPostExecute(aVoid);
         }
     }

@@ -5,7 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#33b5e5">
+    android:background="@color/background">
 
     <ImageView
         android:layout_width="60dp"
