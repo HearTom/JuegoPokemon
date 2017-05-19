@@ -2,4 +2,7 @@
 
     <color name="black_overlay">#66000000</color>
     <color name="background">#33b5e5</color>
+    <color name="colorPrimary">#E53935</color>
+    <color name="colorPrimaryDark">#FF136D8E</color>
+    <color name="colorAccent">#4caf50</color>
 </resources>
