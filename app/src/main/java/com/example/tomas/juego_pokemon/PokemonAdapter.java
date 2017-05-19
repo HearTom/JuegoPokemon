@@ -40,9 +40,9 @@ public class PokemonAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View contentView, ViewGroup parent) {
-        View vi=contentView;
+        View vi = contentView;
 
-        if(contentView == null) {
+        if (contentView == null) {
             LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             vi = inflater.inflate(R.layout.listview_layout, null);
         }
